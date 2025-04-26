@@ -1,23 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Your Bookings</title>
+    <meta charset="UTF-8">
+    <title>Your Bookings - YatriSimplified</title>
+    <style>
+        /* (All your existing styles here, no change) */
+
+        .download-button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #d4af37;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-button:hover {
+            background-color: #c39b35;
+        }
+    </style>
 </head>
 <body>
-    <h2>Your Bookings</h2>
-    {% if bookings %}
-        <ul>
-            {% for b in bookings %}
-                <li>
-                    <strong>Confirmation:</strong> {{ b.confirmation_code }}<br>
-                    {{ b.source }} → {{ b.destination }} via {{ b.mode }}<br>
-                    📅 {{ b.booking_time }} | 💰 ₹{{ b.cost }}
-                </li>
-                <hr>
+
+    <div class="header">
+        <h1>Your Bookings</h1>
+        <div class="header-links">
+            <a href="/">🏠 Home</a>
+            <a href="/wallet">💰 Wallet</a>
+            <a href="/logout">🔒 Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if bookings %}
+            {% for booking_id, booking in bookings.items() %}
+                <div class="booking">
+                    <h2>Booking ID: {{ booking_id }}</h2>
+                    <div class="booking-details">
+                        <p><strong>Confirmation Code:</strong> {{ booking.confirmation_code }}</p>
+                        <p><strong>Total Cost:</strong> ₹{{ booking.cost }}</p>
+                        <p><strong>Booking Time:</strong> {{ booking.booking_time }}</p>
+                    </div>
+                    <h3>Route Segments:</h3>
+                    <ul class="segments">
+                        {% for segment in booking.segments %}
+                            <li>
+                                <strong>{{ segment.source }} → {{ segment.destination }}</strong><br>
+                                🕒 <strong>Departure:</strong> {{ segment.departure_time }}<br>
+                                🕓 <strong>Arrival:</strong> {{ segment.arrival_time }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Download PDF Button -->
+                    <a href="{{ url_for('download_booking_pdf', booking_id=booking_id) }}" class="download-button" target="_blank">
+                        📄 Download PDF
+                    </a>
+                </div>
             {% endfor %}
-        </ul>
-    {% else %}
-        <p>No bookings found.</p>
-    {% endif %}
+        {% else %}
+            <div class="no-bookings">
+                <p>No bookings found.</p>
+            </div>
+        {% endif %}
+    </div>
+
 </body>
 </html>

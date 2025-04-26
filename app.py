@@ -33,8 +33,31 @@ def logout():
     return redirect('/login')
 
 
-def send_confirmation_email(to_address, confirmation_code, booking_details):
-    # Email subject and body content
+def send_confirmation_email(to_address, confirmation_code, route_segments):
+    # Construct booking details
+    booking_details = ""
+
+    for segment in route_segments:
+        source = segment.get('source', 'Unknown')
+        destination = segment.get('destination', 'Unknown')
+        mode = segment.get('mode', 'Unknown')
+        departure_datetime = segment.get('departure_datetime', 'N/A')
+        arrival_datetime = segment.get('arrival_datetime', 'N/A')
+        cost = segment.get('cost', 'N/A')
+        duration = segment.get('duration', 'N/A')
+
+        booking_details += f"""
+        From: {source}
+        To: {destination}
+        Mode of Transport: {mode}
+        Departure: {departure_datetime}
+        Arrival: {arrival_datetime}
+        Cost: ₹{cost}
+        Duration: {duration} minutes
+        ---------------------------
+        """
+
+    # Email subject and body
     subject = "Booking Confirmation"
     body = f"""
     Dear Customer,
@@ -52,7 +75,7 @@ def send_confirmation_email(to_address, confirmation_code, booking_details):
     Multimodal Transport System Team
     """
 
-    # Set up the MIME
+    # Set up MIME
     msg = MIMEMultipart()
     msg['From'] = SMTP_USERNAME
     msg['To'] = to_address
@@ -111,6 +134,8 @@ def format_route_with_dates(route, travel_date_str):
 
     return updated_route
 
+
+route_cache = {}
 
 
 @app.route('/find-routes', methods=['GET', 'POST'])
@@ -371,18 +396,16 @@ def user_bookings(user_id):
     return render_template('bookings.html', bookings=bookings)
 
 
-@app.route('/booking-confirmation', methods=['POST'])
-def booking_confirmation():
+@app.route('/booking-confirmation/<int:route_id>', methods=['POST'])
+def booking_confirmation(route_id):
     user_id = session.get('user_id')
     if not user_id:
-        flash("Please log in to confirm your booking.", "error")
+        flash("Booking session expired or not logged in", "error")
         return redirect('/login')
 
-    # ✅ Get selected route from session and debug
-    selected_route = session.get('selected_route')
-    print("Selected route from session:", selected_route)  # 🔍 Debug selected route
+    selected_route = route_cache.get(route_id)
     if not selected_route:
-        flash("No route selected.", "error")
+        flash("Session expired. Please search again.", "error")
         return redirect('/find-routes')
 
     total_cost = selected_route['total_cost']
@@ -392,61 +415,115 @@ def booking_confirmation():
     cursor = conn.cursor()
 
     try:
-        # ✅ Step 1: Check wallet balance before deduction
         cursor.execute("SELECT balance FROM wallet WHERE user_id = %s", (user_id,))
         result = cursor.fetchone()
         print("Wallet query result:", result)
 
-        if not result or result[0] < total_cost:
+        if not result:
+            flash("Wallet not found for this user.", "error")
+            return redirect('/wallet')
+
+        wallet_balance = result['balance']
+        if wallet_balance < total_cost:
             flash("Insufficient wallet balance.", "error")
             return redirect('/wallet')
 
-        print("Wallet balance:", result[0])
-
-        # ✅ Step 2: Deduct from wallet
         cursor.execute("UPDATE wallet SET balance = balance - %s WHERE user_id = %s", (total_cost, user_id))
-        print(f"Deducted ₹{total_cost} from wallet for user {user_id}")
 
-        # ✅ Step 3: Save booking
-        confirmation_code = str(uuid.uuid4())[:8].upper()
+        confirmation_code = str(uuid.uuid4())[:8].upper()  # Generate unique code
+
         first_segment_route_id = route_segments[0]['id']
-        print("Inserting into bookings with:", user_id, first_segment_route_id, total_cost, confirmation_code)
-
         cursor.execute("""
             INSERT INTO bookings (user_id, route_id, cost, confirmation_code)
             VALUES (%s, %s, %s, %s)
         """, (user_id, first_segment_route_id, total_cost, confirmation_code))
 
         booking_id = cursor.lastrowid
-        print("Generated booking_id:", booking_id)
-
-        # ✅ Step 4: Insert each segment into booking_routes
-        print("Inserting segments for booking_id:", booking_id)
         for segment in route_segments:
-            print("Segment route_id:", segment['id'])
             cursor.execute("INSERT INTO booking_routes (booking_id, route_id) VALUES (%s, %s)", (booking_id, segment['id']))
 
-        # ✅ Commit transaction
         conn.commit()
+        print("Route segments:", route_segments)
 
-        # ✅ Step 5: Confirm data is saved
-        cursor.execute("SELECT * FROM bookings WHERE id = %s", (booking_id,))
-        saved_booking = cursor.fetchone()
-        print("Booking saved:", saved_booking)
+        # Step 1: Retrieve user email
+        cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
+        user_email = cursor.fetchone()['email']
 
-        flash("Booking confirmed successfully!", "success")
+        # Step 2: Create the booking details string
+        # Assuming 'name' key might be different in some segments
+        booking_details = "\n".join(
+            [f"Route Segment: {segment.get('name', 'Unknown')} (ID: {segment['id']})" for segment in route_segments])
+
+        # Step 3: Send the confirmation email
+        send_confirmation_email(user_email, confirmation_code, route_segments)
+
+        # Step 4: Flash success message and redirect to bookings page
+        flash("Booking confirmed successfully! A confirmation email has been sent.", "success")
         return redirect('/bookings')
 
     except Exception as e:
-        # ✅ Print full error
         traceback.print_exc()
-        print("Exception occurred:", str(e))
         conn.rollback()
         flash("Booking failed due to an error.", "error")
         return redirect('/find-routes')
 
     finally:
         conn.close()
+
+
+@app.route('/bookings')
+def view_bookings():
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Please log in to view bookings.", "error")
+        return redirect('/login')
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Get all bookings and their route segments
+        cursor.execute("""
+            SELECT b.id AS booking_id, b.cost, b.booking_time, b.confirmation_code,
+                   r.source, r.destination, r.departure_time, r.arrival_time
+            FROM bookings b
+            JOIN booking_routes br ON b.id = br.booking_id
+            JOIN routes r ON br.route_id = r.id
+            WHERE b.user_id = %s
+            ORDER BY b.booking_time DESC
+        """, (user_id,))
+
+        rows = cursor.fetchall()
+        print("Fetched rows:", rows)  # Debugging line to check if results are returned
+
+        # Group segments by booking_id
+        bookings = {}
+        for row in rows:
+            bid = row['booking_id']
+            if bid not in bookings:
+                bookings[bid] = {
+                    'confirmation_code': row['confirmation_code'],
+                    'cost': row['cost'],
+                    'booking_time': row['booking_time'],
+                    'segments': []
+                }
+            bookings[bid]['segments'].append({
+                'source': row['source'],
+                'destination': row['destination'],
+                'departure_time': row['departure_time'],
+                'arrival_time': row['arrival_time']
+            })
+
+        return render_template('bookings.html', bookings=bookings)
+
+    except Exception as e:
+        traceback.print_exc()
+        flash("Could not retrieve your bookings.", "error")
+        return redirect('/')
+
+    finally:
+        conn.close()
+
 
 def confirm_booking(selected_route):
     user_id = session.get('user_id')
