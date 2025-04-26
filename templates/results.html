@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routes Found - YatriSimplified</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .route-summary, .route-details {
+            background-color: #fffdf8;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .route-summary p, .route-details p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .total-cost {
+            text-align: right;
+        }
+
+        .total-cost a {
+            color: #d4af37;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .route-summary a:hover, .total-cost a:hover {
+            text-decoration: underline;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        li {
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .step-mode {
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        .step-time {
+            font-size: 14px;
+            color: #555;
+        }
+
+        hr {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #d4af37;
+        }
+
+        .back-button {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 16px;
+        }
+
+        .back-button a {
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-button a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Available Routes for {{ travel_date }}</h2>
+
+    {% if routes %}
+        <!-- Fastest Route -->
+        <p><strong>Fastest Route ({{ fastest.total_time }} mins)</strong></p>
+        <div class="route-summary">
+            <p><strong>Total Time:</strong> {{ fastest.total_time }} mins</p>
+            <p class="total-cost"><a href="{{ url_for('confirmation', route_id=fastest.id) }}"><strong>Total Cost:</strong> ₹{{ fastest.total_cost }}</a></p>
+        </div>
+        <ul>
+            {% for step in fastest.route %}
+                <li>
+                    {{ step.source }} → {{ step.destination }} via
+                    {% if step.mode == 'bus' %}🚌{% elif step.mode == 'train' %}🚆{% elif step.mode == 'flight' %}✈️{% elif step.mode == 'cab' %}🚖{% endif %}
+                    <span class="step-mode">{{ step.mode.capitalize() }}</span><br>
+                    <span class="step-time">🕒 Departure: {{ step.departure_datetime }} | <strong>Arrival:</strong> {{ step.arrival_datetime }}</span><br>
+                    ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Cheapest Route -->
+        <p><strong>Affordable Route (₹{{ cheapest.total_cost }})</strong></p>
+        <div class="route-summary">
+            <p><strong>Total Time:</strong> {{ cheapest.total_time }} mins</p>
+            <p class="total-cost"><a href="{{ url_for('confirmation', route_id=cheapest.id) }}"><strong>Total Cost:</strong> ₹{{ cheapest.total_cost }}</a></p>
+        </div>
+        <ul>
+            {% for step in cheapest.route %}
+                <li>
+                    {{ step.source }} → {{ step.destination }} via
+                    {% if step.mode == 'bus' %}🚌{% elif step.mode == 'train' %}🚆{% elif step.mode == 'flight' %}✈️{% elif step.mode == 'cab' %}🚖{% endif %}
+                    <span class="step-mode">{{ step.mode.capitalize() }}</span><br>
+                    <span class="step-time">🕒 Departure: {{ step.departure_datetime }} | <strong>Arrival:</strong> {{ step.arrival_datetime }}</span><br>
+                    ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h3>All Routes for {{ travel_date }}</h3>
+        {% for r in routes %}
+            <hr>
+            <div class="route-details">
+                <p><strong>Total Time:</strong> {{ r.total_time }} mins</p>
+                <p class="total-cost"><a href="{{ url_for('confirmation', route_id=r.id) }}"><strong>Total Cost:</strong> ₹{{ r.total_cost }}</a></p>
+            </div>
+            <ul>
+                {% for step in r.route %}
+                    <li>
+                        {{ step.source }} → {{ step.destination }} via
+                        {% if step.mode == 'bus' %}🚌{% elif step.mode == 'train' %}🚆{% elif step.mode == 'flight' %}✈️{% elif step.mode == 'cab' %}🚖{% endif %}
+                        <span class="step-mode">{{ step.mode.capitalize() }}</span><br>
+                        <span class="step-time">🕒 Departure: {{ step.departure_datetime }} | <strong>Arrival:</strong> {{ step.arrival_datetime }}</span><br>
+                        ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>No routes found for the selected day.</p>
+    {% endif %}
+
+    <div class="back-button">
+        <a href="/">🔙 Search Again</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>YatriSimplified - Multimodal Transport</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #d4af37;
+            color: #ffffff;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-buttons button {
+            background-color: #ffffff;
+            color: #d4af37;
+            border: 2px solid #ffffff;
+            padding: 8px 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.3s ease;
+        }
+
+        .nav-buttons button:hover {
+            background-color: #f8f0cd;
+            border-color: #f8f0cd;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #fffdf8;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            color: #333333;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d4af37;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #ffffff;
+        }
+
+        input[type="submit"] {
+            margin-top: 30px;
+            width: 100%;
+            background-color: #d4af37;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #b79828;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-row input[type="text"] {
+            flex: 1;
+        }
+
+        #swap-btn {
+            background-color: #d4af37;
+            border: none;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #swap-btn:hover {
+            background-color: #b79828;
+        }
+
+        .how-it-works {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 30px;
+            background-color: #fffaf0;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        .how-it-works h3 {
+            text-align: center;
+            color: #d4af37;
+            margin-bottom: 30px;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .step {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+        }
+
+        .step h4 {
+            color: #d4af37;
+            margin: 15px 0 10px;
+            font-size: 18px;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .icon {
+            font-size: 30px;
+            color: #d4af37;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>YatriSimplified</h1>
+    <div class="nav-buttons">
+        <form action="/wallet" method="GET">
+    <button type="submit"><i class="fas fa-wallet"></i> Wallet</button>
+</form>
+
+        <form action="/login" method="GET">
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+        <form action="/register" method="GET">
+            <button type="submit"><i class="fas fa-user-plus"></i> Register</button>
+        </form>
+
+    </div>
+</header>
+
+<div class="container">
+    <h2>Search Travel Routes</h2>
+    <form method="POST" action="/find-routes">
+        <label for="source">Source:</label>
+        <div class="input-row">
+            <input type="text" name="source" id="source" required>
+            <button type="button" id="swap-btn" title="Swap Source and Destination"><i class="fas fa-exchange-alt"></i></button>
+        </div>
+
+        <label for="destination">Destination:</label>
+        <input type="text" name="destination" id="destination" required>
+
+        <label for="travel_date">Travel Date:</label>
+        <input type="date" name="travel_date" id="travel_date" required>
+
+        <input type="submit" value="Find Routes">
+    </form>
+</div>
+
+<div class="how-it-works">
+    <h3>How YatriSimplified Works</h3>
+    <div class="steps">
+        <div class="step">
+            <i class="fas fa-map-marker-alt icon"></i>
+            <h4>1. Enter Your Route</h4>
+            <p>Select your source, destination, and travel date to begin.</p>
+        </div>
+        <div class="step">
+            <i class="fas fa-search-location icon"></i>
+            <h4>2. We Find the Best Options</h4>
+            <p>We compare buses, trains, flights, and cabs to find optimal combinations.</p>
+        </div>
+        <div class="step">
+            <i class="fas fa-balance-scale icon"></i>
+            <h4>3. Compare Time & Cost</h4>
+            <p>View detailed route options based on journey time and pricing.</p>
+        </div>
+        <div class="step">
+            <i class="fas fa-wallet icon"></i>
+            <h4>4. Book & Pay</h4>
+            <p>Confirm the best route and pay instantly using your wallet.</p>
+        </div>
+        <div class="step">
+            <i class="fas fa-envelope-open-text icon"></i>
+            <h4>5. Get Email Confirmation</h4>
+            <p>Your booking and route details will be sent straight to your inbox.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('swap-btn').addEventListener('click', function () {
+        const sourceInput = document.getElementById('source');
+        const destinationInput = document.getElementById('destination');
+        const temp = sourceInput.value;
+        sourceInput.value = destinationInput.value;
+        destinationInput.value = temp;
+    });
+</script>
+
+</body>
+</html>

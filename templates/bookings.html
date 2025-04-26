@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Bookings</title>
+</head>
+<body>
+    <h2>Your Bookings</h2>
+    {% if bookings %}
+        <ul>
+            {% for b in bookings %}
+                <li>
+                    <strong>Confirmation:</strong> {{ b.confirmation_code }}<br>
+                    {{ b.source }} → {{ b.destination }} via {{ b.mode }}<br>
+                    📅 {{ b.booking_time }} | 💰 ₹{{ b.cost }}
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No bookings found.</p>
+    {% endif %}
+</body>
+</html>
