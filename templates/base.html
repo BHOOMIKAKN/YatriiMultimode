@@ -4,23 +4,100 @@
     <meta charset="UTF-8">
     <title>{% block title %}YatriSimplified{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+        }
+
+        /* 🌐 Navbar */
+        nav {
+            background-color: #d4af37;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .nav-left, nav .nav-right {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #2c3e50;
+        }
+
+        /* 💬 Flash Messages */
+        .flash-messages {
+            margin: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .flash-messages li {
+            list-style: none;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- 🌐 Common NavBar -->
+    <!-- 🌐 Navbar -->
     <nav>
-        {% if 'user_id' in session %}
-            <a href="/">Home</a> |
-            <a href="/logout">Logout</a>
-        {% else %}
-            <a href="/login">Login</a>
-        {% endif %}
+        <div class="nav-left">
+            <a href="/">🏠 YatriSimplified</a>
+        </div>
+
+        <div class="nav-right">
+            {% if 'user_id' in session %}
+                <a href="/wallet">Wallet</a>
+                <a href="/bookings">My Bookings</a>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            {% endif %}
+        </div>
     </nav>
 
     <!-- 💬 Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <ul>
+            <ul class="flash-messages">
                 {% for category, message in messages %}
                     <li class="{{ category }}">{{ message }}</li>
                 {% endfor %}
@@ -28,7 +105,7 @@
         {% endif %}
     {% endwith %}
 
-    <!-- 🧱 Page-specific content goes here -->
+    <!-- 🧱 Page Content -->
     {% block content %}
     {% endblock %}
 

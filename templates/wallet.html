@@ -1,14 +1,73 @@
 {% extends 'base.html' %}
 
-{% block title %}Wallet{% endblock %}
+{% block title %}Wallet - YatriSimplified{% endblock %}
 
 {% block content %}
-    <h1>Your Wallet Balance: ${{ balance }}</h1>
+<style>
+    .wallet-container {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 500px;
+        margin: 40px auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
 
-    <!-- ✅ Add Funds Form -->
-    <form action="{{ url_for('add_funds') }}" method="POST">
-        <label for="amount">Add Amount:</label>
-        <input type="number" name="amount" step="0.01" required>
-        <button type="submit">Add Funds</button>
+    .wallet-balance {
+        font-size: 28px;
+        font-weight: bold;
+        color: #27ae60;
+        margin-bottom: 30px;
+    }
+
+    .add-funds-form label {
+        font-size: 18px;
+        margin-bottom: 10px;
+        display: block;
+        color: #34495e;
+    }
+
+    .add-funds-form input[type="number"] {
+        width: 80%;
+        padding: 10px;
+        margin: 15px 0;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .add-funds-form button {
+        background-color: #d4af37;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .add-funds-form button:hover {
+        background-color: #c39b35;
+    }
+</style>
+
+<div class="wallet-container">
+    <h1>💰 Wallet</h1>
+
+    <div class="wallet-balance">
+        Current Balance: ₹{{ balance }}
+    </div>
+
+    <form action="{{ url_for('add_funds') }}" method="POST" class="add-funds-form">
+        <label for="amount">Enter Amount to Add</label>
+        <input type="number" name="amount" step="0.01" min="1" required>
+
+        <br>
+
+        <button type="submit">➕ Add Funds</button>
     </form>
+</div>
+
 {% endblock %}

@@ -4,22 +4,90 @@
     <meta charset="UTF-8">
     <title>Your Bookings - YatriSimplified</title>
     <style>
-        /* (All your existing styles here, no change) */
-
-        .download-button {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #d4af37;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
         }
 
-        .download-button:hover {
-            background-color: #c39b35;
+        .header {
+            background-color: #d4af37;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header-links a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header-links a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .booking {
+            background-color: #fff;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking h2 {
+            margin-top: 0;
+            color: #d4af37;
+            font-size: 24px;
+        }
+
+        .booking-details {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #34495e;
+        }
+
+        .segments {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+
+        .segments li {
+            background-color: #fdfdfd;
+            padding: 15px;
+            border-left: 5px solid #d4af37;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .segments li strong {
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        .no-bookings {
+            text-align: center;
+            font-size: 22px;
+            margin-top: 100px;
+            color: #888;
         }
     </style>
 </head>
@@ -54,11 +122,6 @@
                             </li>
                         {% endfor %}
                     </ul>
-
-                    <!-- Download PDF Button -->
-                    <a href="{{ url_for('download_booking_pdf', booking_id=booking_id) }}" class="download-button" target="_blank">
-                        📄 Download PDF
-                    </a>
                 </div>
             {% endfor %}
         {% else %}
