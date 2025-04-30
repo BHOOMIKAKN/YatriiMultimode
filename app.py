@@ -96,6 +96,56 @@ def send_confirmation_email(to_address, confirmation_code, route_segments):
         print(f"Failed to send email: {e}")
 
 
+@app.route('/admin')
+def admin_dashboard():
+    if not session.get('is_admin'):
+        flash('Access Denied. Admins Only.', 'error')
+        return redirect('/')
+
+    conn = get_connection()   # ✅ Correct way to get DB connection
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    try:
+        # Fetch users
+        cursor.execute("SELECT id, email, name FROM users")
+        users = cursor.fetchall()
+
+        # Fetch detailed bookings
+        cursor.execute("""
+            SELECT 
+                b.id AS booking_id,
+                b.user_id,
+                u.name AS user_name,
+                tm.mode AS mode,
+                b.cost,
+                b.booking_time,
+                b.confirmation_code,
+                r.source,
+                r.destination,
+                r.departure_time,
+                r.arrival_time
+            FROM bookings b
+            JOIN users u ON b.user_id = u.id
+            JOIN booking_routes br ON b.id = br.booking_id
+            JOIN routes r ON br.route_id = r.id
+            JOIN transport_modes tm ON r.mode_id = tm.id
+        """)
+        bookings = cursor.fetchall()
+
+        # Fetch wallets
+        cursor.execute("SELECT user_id, balance FROM wallet")
+        wallets = cursor.fetchall()
+
+        return render_template('admin.html', users=users, bookings=bookings, wallets=wallets)
+
+    except Exception as e:
+        print(f"[ADMIN ERROR] {e}")
+        return "Error loading admin dashboard", 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
 def format_route_with_dates(route, travel_date_str):
     base_date = datetime.strptime(travel_date_str, "%Y-%m-%d")
     updated_route = []
@@ -202,9 +252,15 @@ def login():
                 session['user_email'] = user['email']
                 session['user_name'] = user['name']
 
+                # 🛡️ Admin check:
+                if user['email'] == 'justsecret4411@gmail.com':  # <-- put your admin email here
+                    session['is_admin'] = True
+                else:
+                    session['is_admin'] = False
+
                 print(f"[LOGIN SUCCESS] User ID: {user['id']}, Email: {user['email']}")
 
-                return redirect('/')  # Or redirect to home/dashboard
+                return redirect('/admin')  # Or redirect to home/dashboard
             else:
                 print("[LOGIN FAILED] Invalid credentials")
                 return render_template('login.html', error="Invalid email or password")
@@ -534,6 +590,9 @@ def confirm_booking(selected_route):
     cursor = conn.cursor()
 
     try:
+        # Set the transaction isolation level to handle concurrent transactions
+        cursor.execute("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")
+
         # Deduct from wallet
         cursor.execute("UPDATE wallet SET balance = balance - %s WHERE user_id = %s", (total_cost, user_id))
 
@@ -545,11 +604,35 @@ def confirm_booking(selected_route):
         """, (user_id, route_segments[0]['id'], total_cost, confirmation_code))
         booking_id = cursor.lastrowid
 
-        # Insert each segment into booking_routes
+        # Insert each segment into booking_routes and reduce available seats
         for segment in route_segments:
-            cursor.execute("INSERT INTO booking_routes (booking_id, route_id) VALUES (%s, %s)", (booking_id, segment['id']))
+            route_id = segment['id']  # Route ID for this segment
 
+            # Insert booking route
+            cursor.execute("INSERT INTO booking_routes (booking_id, route_id) VALUES (%s, %s)", (booking_id, route_id))
+
+            # Fetch current seats_available with row lock to avoid concurrency issues
+            cursor.execute("SELECT seats_available FROM routes WHERE id = %s FOR UPDATE", (route_id,))
+            seats_available = cursor.fetchone()[0]
+
+            # Debugging log
+            print(f"Route ID: {route_id}, Seats Available: {seats_available}")
+
+            if seats_available > 0:
+                # Reduce the seats by 1
+                cursor.execute("UPDATE routes SET seats_available = seats_available - 1 WHERE id = %s", (route_id,))
+
+                # Check if update was successful
+                if cursor.rowcount == 1:
+                    print(f"Reduced seat availability for route {route_id}. New seats_available: {seats_available - 1}")
+                else:
+                    raise Exception(f"Failed to update seat availability for route ID: {route_id}")
+            else:
+                raise Exception(f"No available seats for route ID: {route_id}")
+
+        # Commit transaction
         conn.commit()
+
         flash("Booking successful!", "success")
 
         # (Optional) Send confirmation email here

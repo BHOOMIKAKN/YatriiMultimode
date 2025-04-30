@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - YatriSimplified</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(to bottom, #d4af37, #c29928);
+            color: #fff;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+        }
+        .sidebar h2 {
+            font-size: 26px;
+            margin-bottom: 40px;
+        }
+        .sidebar button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        .sidebar button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .content {
+            margin-left: 260px;
+            padding: 40px;
+            width: calc(100% - 260px);
+        }
+        h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        h2::after {
+            content: '';
+            width: 60px;
+            height: 3px;
+            background: #d4af37;
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #d4af37;
+            color: white;
+            font-size: 16px;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        input[type="text"] {
+            padding: 10px 15px;
+            width: 300px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        /* Payment Status Colors */
+        .paid {
+            color: green;
+            font-weight: bold;
+        }
+        .pending {
+            color: red;
+            font-weight: bold;
+        }
+        .cab-pending {
+            color: orange;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <button onclick="showSection('users')"><i class="fas fa-user"></i> Users</button>
+    <button onclick="showSection('bookings')"><i class="fas fa-ticket"></i> Bookings</button>
+    <button onclick="showSection('wallets')"><i class="fas fa-wallet"></i> Wallets</button>
+    <form action="/" method="GET" style="margin-top: auto;">
+        <button type="submit"><i class="fas fa-home"></i> Home</button>
+    </form>
+</div>
+
+<div class="content">
+    <!-- Users Section -->
+    <div id="users" class="section">
+        <h2>👤 Registered Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.name }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bookings Section -->
+    <div id="bookings" class="section" style="display:none;">
+    <h2>🧾 All Bookings</h2>
+    <input type="text" id="searchInput" placeholder="Search by User Name...">
+
+    <table id="bookingsTable">
+        <thead>
+            <tr>
+                <th onclick="sortBookingId()" style="cursor:pointer;">
+                    Booking ID <span id="sortIcon">🔽</span>
+                </th>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>Mode</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+                <th>Cost (₹)</th>
+                <th>Booking Time</th>
+                <th>Payment Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.booking_id }}</td>
+                <td>{{ booking.user_id }}</td>
+                <td>{{ booking.user_name }}</td>
+                <td>{{ booking.mode }}</td>
+                <td>{{ booking.source }}</td>
+                <td>{{ booking.destination }}</td>
+                <td>{{ booking.departure_time }}</td>
+                <td>{{ booking.arrival_time }}</td>
+                <td>₹{{ booking.cost }}</td>
+                <td>{{ booking.booking_time }}</td>
+                <td>
+                    {% if booking.mode == 'Cab' %}
+                        {% if booking.payment_status == 'Paid' %}
+                            <span class="paid">Paid ✅</span>
+                        {% else %}
+                            <span class="cab-pending">Still need to pay 🟠</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="paid">Paid ✅</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Sorting Script -->
+<script>
+let bookingIdAsc = true; // default to ascending order first
+
+function sortBookingId() {
+    const table = document.getElementById('bookingsTable');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+    rows.sort((a, b) => {
+        const idA = parseInt(a.cells[0].innerText.trim());
+        const idB = parseInt(b.cells[0].innerText.trim());
+        return bookingIdAsc ? idA - idB : idB - idA;
+    });
+
+    // Remove existing rows
+    while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+    }
+
+    // Append sorted rows
+    rows.forEach(row => tbody.appendChild(row));
+
+    // Toggle sort direction
+    bookingIdAsc = !bookingIdAsc;
+
+    // Change the icon
+    document.getElementById('sortIcon').innerText = bookingIdAsc ? '🔽' : '🔼';
+}
+</script>
+
+    <!-- Wallets Section -->
+    <div id="wallets" class="section" style="display:none;">
+        <h2>💰 Wallet Balances</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Wallet Balance (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for wallet in wallets %}
+                <tr>
+                    <td>{{ wallet.user_id }}</td>
+                    <td>{{ wallet.balance }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Show sections
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(section => {
+        section.style.display = 'none';
+    });
+    document.getElementById(sectionId).style.display = 'block';
+}
+
+// Live Search
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const rows = document.querySelectorAll("#bookingsTable tbody tr");
+
+    searchInput.addEventListener('keyup', () => {
+        const filter = searchInput.value.toLowerCase();
+        rows.forEach(row => {
+            const userName = row.cells[2].textContent.toLowerCase();
+            row.style.display = userName.includes(filter) ? "" : "none";
+        });
+    });
+});
+</script>
+
+</body>
+</html>

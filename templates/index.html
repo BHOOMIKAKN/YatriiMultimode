@@ -277,6 +277,12 @@
         destinationInput.value = temp;
     });
 </script>
+<script>
+    // Set today's date as the minimum selectable date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('travel_date').setAttribute('min', today);
+</script>
+
 
 <!-- 🌟 Footer -->
 <footer>
