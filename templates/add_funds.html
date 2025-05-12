@@ -1,32 +1,153 @@
-<!-- templates/add_funds.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Funds</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #d4af37;
+            --accent: #facc15;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --card: #ffffff;
+            --hover-bg: #fefce8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 520px;
+            margin: 50px auto;
+            background: var(--card);
+            padding: 32px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 15px;
+            background-color: #fff;
+            color: var(--text);
+        }
+
+        button[type="submit"] {
+            margin-top: 30px;
+            width: 100%;
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #1e293b;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .flash-messages {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fff3cd;
+            color: #856404;
+            font-weight: bold;
+        }
+
+        .flash-messages li {
+            list-style: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Add Funds to Your Wallet</h1>
 
-    <form method="POST" action="{{ url_for('add_funds') }}">
-        <label for="amount">Amount to add:</label>
-        <input type="number" name="amount" step="0.01" required>
-        <input type="hidden" name="user_id" value="{{ user_id }}">  <!-- User ID from context -->
-        <button type="submit">Add Funds</button>
-    </form>
+    <header>
+        <h1>Wallet Manager</h1>
+    </header>
 
-    <a href="{{ url_for('wallet_balance', user_id=user_id) }}">Back to Wallet</a>
-<!-- Add this code in the body section of your HTML templates to display flash messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul>
-            {% for category, message in messages %}
-                <li class="{{ category }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+    <div class="container">
+        <h2>Add Funds to Your Wallet</h2>
+
+        <form method="POST" action="{{ url_for('add_funds') }}">
+            <label for="amount">Amount to Add</label>
+            <input type="number" name="amount" step="0.01" required>
+
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <button type="submit">Add Funds</button>
+        </form>
+
+        <a class="back-link" href="{{ url_for('wallet_balance', user_id=user_id) }}">← Back to Wallet</a>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
 
 </body>
 </html>

@@ -146,44 +146,47 @@ def admin_dashboard():
         cursor.close()
         conn.close()
 
-def format_route_with_dates(route, travel_date_str):
-    base_date = datetime.strptime(travel_date_str, "%Y-%m-%d")
-    updated_route = []
+def parse_time_flexibly(time_str):
+    """Parses time in 'HH:MM' or 'HH:MM:SS' formats."""
+    try:
+        return datetime.strptime(time_str, "%H:%M").time()
+    except ValueError:
+        return datetime.strptime(time_str, "%H:%M:%S").time()
 
-    for step in route:
-        # Convert if not a string already
-        dep_time_raw = step['departure_time']
-        arr_time_raw = step['arrival_time']
+def format_route_with_dates(segments, start_date):
+    current_datetime = datetime.strptime(start_date + " 00:00", "%Y-%m-%d %H:%M")
+    formatted_segments = []
 
-        if isinstance(dep_time_raw, timedelta):
-            dep_time = (datetime.min + dep_time_raw).time()
-        elif isinstance(dep_time_raw, datetime):
-            dep_time = dep_time_raw.time()
-        else:
-            dep_time = datetime.strptime(str(dep_time_raw), "%H:%M:%S").time()
+    for segment in segments:
+        dep_time_raw = segment['departure_time']
+        arr_time_raw = segment['arrival_time']
 
-        if isinstance(arr_time_raw, timedelta):
-            arr_time = (datetime.min + arr_time_raw).time()
-        elif isinstance(arr_time_raw, datetime):
-            arr_time = arr_time_raw.time()
-        else:
-            arr_time = datetime.strptime(str(arr_time_raw), "%H:%M:%S").time()
+        # Convert all to strings first
+        dep_str = str(dep_time_raw)
+        arr_str = str(arr_time_raw)
 
-        # Combine date + time
-        dep_datetime = datetime.combine(base_date, dep_time)
-        arr_datetime = datetime.combine(base_date, arr_time)
+        dep_time = parse_time_flexibly(dep_str)
+        arr_time = parse_time_flexibly(arr_str)
 
-        if arr_datetime < dep_datetime:
-            arr_datetime += timedelta(days=1)
+        # Departure datetime
+        dep_dt = current_datetime.replace(hour=dep_time.hour, minute=dep_time.minute)
+        if dep_dt < current_datetime:
+            dep_dt += timedelta(days=1)
 
-        # Format with day + full date
-        step['departure_datetime'] = dep_datetime.strftime("%a, %Y-%m-%d %H:%M")
-        step['arrival_datetime'] = arr_datetime.strftime("%a, %Y-%m-%d %H:%M")
+        # Arrival datetime
+        arr_dt = dep_dt.replace(hour=arr_time.hour, minute=arr_time.minute)
+        if arr_time <= dep_time:
+            arr_dt += timedelta(days=1)
 
-        updated_route.append(step)
+        segment['departure_datetime'] = dep_dt
+        segment['arrival_datetime'] = arr_dt
+        segment['formatted_departure'] = dep_dt.strftime('%a, %Y-%m-%d %H:%M')
+        segment['formatted_arrival'] = arr_dt.strftime('%a, %Y-%m-%d %H:%M')
 
-    return updated_route
+        current_datetime = arr_dt
+        formatted_segments.append(segment)
 
+    return formatted_segments
 
 route_cache = {}
 
@@ -195,16 +198,43 @@ def home():
         source = request.form['source']
         destination = request.form['destination']
         travel_date = request.form['travel_date']
+
+        if not source or not destination or not travel_date:
+            flash("Please fill in all fields.", "error")
+            return redirect('/')
+
         session['travel_date'] = travel_date  # 🔒 Save travel_date in session
 
         routes = find_all_routes(source, destination, travel_date)
+
+        if not routes:
+            flash("No routes found for the given source, destination, or date.", "warning")
+            return render_template('results.html', routes=[], travel_date=travel_date)
+
+        route_cache.clear()  # 🔁 Clear old cache
+
+        # Make sure to add 'id' to each route
         for i, route in enumerate(routes):
-            route['id'] = i   # or just i, as long as it's unique
+            route['cache_id'] = i  # For selection from UI
+            route['id'] = route.get('id', i)  # Ensure 'id' exists for each route, use index as fallback
             route['route'] = format_route_with_dates(route['route'], travel_date)
+
+            print(f"[ROUTE {i}] Total Time: {route['total_time']} mins, Total Cost: ₹{route['total_cost']}")
+            for segment in route['route']:
+                print(
+                    f"  SEGMENT - ID: {segment.get('id')} | {segment['source']} → {segment['destination']} via {segment['mode']}")
+
             route_cache[i] = route
 
+        # Get the fastest and cheapest routes
         fastest = min(routes, key=lambda r: r['total_time'], default=None)
         cheapest = min(routes, key=lambda r: r['total_cost'], default=None)
+
+        # Ensure that 'id' exists before passing to the template
+        if fastest and 'id' not in fastest:
+            fastest['id'] = fastest.get('id', None)
+        if cheapest and 'id' not in cheapest:
+            cheapest['id'] = cheapest.get('id', None)
 
         return render_template('results.html',
                                travel_date=travel_date,
@@ -451,6 +481,15 @@ def user_bookings(user_id):
 
     return render_template('bookings.html', bookings=bookings)
 
+def deduct_seats_for_route(route_segments, cursor):
+    for segment in route_segments:
+        segment_id = segment['id']
+        cursor.execute("""
+            UPDATE routes
+            SET seats_available = seats_available - 1
+            WHERE id = %s AND seats_available > 0
+        """, (segment_id,))
+
 
 @app.route('/booking-confirmation/<int:route_id>', methods=['POST'])
 def booking_confirmation(route_id):
@@ -471,9 +510,9 @@ def booking_confirmation(route_id):
     cursor = conn.cursor()
 
     try:
+        # Step 1: Wallet check
         cursor.execute("SELECT balance FROM wallet WHERE user_id = %s", (user_id,))
         result = cursor.fetchone()
-        print("Wallet query result:", result)
 
         if not result:
             flash("Wallet not found for this user.", "error")
@@ -484,43 +523,54 @@ def booking_confirmation(route_id):
             flash("Insufficient wallet balance.", "error")
             return redirect('/wallet')
 
+        # Step 2: Check all segment seat availability
+        for segment in route_segments:
+            segment_id = segment['id']
+            cursor.execute("SELECT seats_available FROM routes WHERE id = %s", (segment_id,))
+            seat_data = cursor.fetchone()
+            if not seat_data or seat_data['seats_available'] <= 0:
+                flash(f"Segment {segment_id} is full. Please choose another route.", "error")
+                conn.rollback()
+                return redirect('/find-routes')
+
+        # Step 3: Deduct wallet balance
         cursor.execute("UPDATE wallet SET balance = balance - %s WHERE user_id = %s", (total_cost, user_id))
 
-        confirmation_code = str(uuid.uuid4())[:8].upper()  # Generate unique code
-
+        # Step 4: Create booking record
+        confirmation_code = str(uuid.uuid4())[:8].upper()
         first_segment_route_id = route_segments[0]['id']
         cursor.execute("""
             INSERT INTO bookings (user_id, route_id, cost, confirmation_code)
             VALUES (%s, %s, %s, %s)
         """, (user_id, first_segment_route_id, total_cost, confirmation_code))
-
         booking_id = cursor.lastrowid
+
+        # Step 5: Insert into booking_routes and reduce seats
         for segment in route_segments:
-            cursor.execute("INSERT INTO booking_routes (booking_id, route_id) VALUES (%s, %s)", (booking_id, segment['id']))
+            segment_id = segment['id']
+            cursor.execute("""
+                INSERT INTO booking_routes (booking_id, route_id)
+                VALUES (%s, %s)
+            """, (booking_id, segment_id))
 
+        # Deduct seats for all segments in one place
+        deduct_seats_for_route(route_segments, cursor)
+
+        # Step 6: Final commit
         conn.commit()
-        print("Route segments:", route_segments)
 
-        # Step 1: Retrieve user email
+        # Step 7: Send confirmation email
         cursor.execute("SELECT email FROM users WHERE id = %s", (user_id,))
         user_email = cursor.fetchone()['email']
-
-        # Step 2: Create the booking details string
-        # Assuming 'name' key might be different in some segments
-        booking_details = "\n".join(
-            [f"Route Segment: {segment.get('name', 'Unknown')} (ID: {segment['id']})" for segment in route_segments])
-
-        # Step 3: Send the confirmation email
         send_confirmation_email(user_email, confirmation_code, route_segments)
 
-        # Step 4: Flash success message and redirect to bookings page
         flash("Booking confirmed successfully! A confirmation email has been sent.", "success")
         return redirect('/bookings')
 
     except Exception as e:
         traceback.print_exc()
         conn.rollback()
-        flash("Booking failed due to an error.", "error")
+        flash("Booking failed due to an internal error.", "error")
         return redirect('/find-routes')
 
     finally:

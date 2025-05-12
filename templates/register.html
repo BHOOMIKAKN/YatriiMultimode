@@ -5,80 +5,95 @@
     <title>Register - YatriSimplified</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffffff;
-            color: #333;
-        }
+    :root {
+        --primary: #0f172a;
+        --secondary: #d4af37;
+        --accent: #facc15;
+        --bg: #f8fafc;
+        --text: #1e293b;
+        --card: #ffffff;
+        --hover-bg: #fefce8;
+    }
 
-        .container {
-            max-width: 420px;
-            margin: 80px auto;
-            background-color: #fffdf8;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
-        }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: var(--text);
+    }
 
-        h2 {
-            text-align: center;
-            color: #d4af37;
-            margin-bottom: 30px;
-        }
+    .container {
+        max-width: 420px;
+        margin: 80px auto;
+        background: var(--card);
+        padding: 32px 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
 
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 6px;
-            color: #555;
-        }
+    h2 {
+        text-align: center;
+        color: var(--primary);
+        font-size: 24px;
+        font-weight: 600;
+    }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d4af37;
-            border-radius: 6px;
-            font-size: 14px;
-            background-color: #ffffff;
-            margin-bottom: 20px;
-        }
+    label {
+        font-weight: 600;
+        display: block;
+        margin-top: 20px;
+        margin-bottom: 5px;
+        color: var(--text);
+    }
 
-        input[type="submit"] {
-            width: 100%;
-            background-color: #d4af37;
-            color: #ffffff;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: background-color 0.3s ease;
-        }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--secondary);
+        border-radius: 6px;
+        font-size: 15px;
+        background-color: #fff;
+        color: var(--text);
+    }
 
-        input[type="submit"]:hover {
-            background-color: #b79828;
-        }
+    input[type="submit"] {
+        margin-top: 30px;
+        width: 100%;
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
 
-        .login-link {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 14px;
-        }
+    input[type="submit"]:hover {
+        background-color: #1e293b;
+    }
 
-        .login-link a {
-            color: #d4af37;
-            text-decoration: none;
-            font-weight: bold;
-        }
+    .login-link {
+        text-align: center;
+        margin-top: 30px;
+        font-size: 14px;
+    }
 
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    .login-link a {
+        color: var(--secondary);
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+
 </head>
 <body>
 

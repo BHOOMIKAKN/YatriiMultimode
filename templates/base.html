@@ -2,112 +2,171 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}YatriSimplified{% endblock %}</title>
+    <title>{% block title %}YatriSimplified - Multimodal Transport{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Basic Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #0f172a;
+            --secondary: #d4af37;
+            --accent: #facc15;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --card: #ffffff;
+            --hover-bg: #fefce8;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f7fa;
-            color: #2c3e50;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: var(--text);
         }
 
-        /* 🌐 Navbar */
-        nav {
-            background-color: #d4af37;
-            padding: 15px 30px;
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
-        nav .nav-left, nav .nav-right {
-            display: flex;
-            gap: 20px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: white;
+        header h1 {
+            margin: 0;
+            font-size: 30px;
             font-weight: bold;
-            font-size: 18px;
-            transition: color 0.3s;
+            letter-spacing: 1px;
+            color: white;
         }
 
-        nav a:hover {
-            color: #2c3e50;
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
         }
 
-        /* 💬 Flash Messages */
+        .nav-buttons a {
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons a:hover {
+            background-color: var(--accent);
+            color: #000;
+        }
+.h1 {
+colour: white;
+}
         .flash-messages {
-            margin: 20px;
-            padding: 10px;
-            border-radius: 5px;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: var(--card);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
         .flash-messages li {
             list-style: none;
-            padding: 10px;
+            padding: 12px 14px;
             margin-bottom: 10px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-weight: 500;
         }
 
-        .success {
-            background-color: #d4edda;
-            color: #155724;
+        .success { background-color: #065f46; color: #a7f3d0; }
+        .error { background-color: #7f1d1d; color: #fecaca; }
+        .info { background-color: #1e3a8a; color: #bfdbfe; }
+
+        .content-wrapper {
+            max-width: 960px;
+            margin: 40px auto;
+            background-color: var(--card);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
 
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
+        footer {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 20px 10px;
+            margin-top: 60px;
         }
 
-        .info {
-            background-color: #d1ecf1;
-            color: #0c5460;
+        footer a {
+            color: white;
+            margin: 0 12px;
+            font-size: 22px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            opacity: 0.7;
+        }
+
+        footer div:last-child {
+            font-size: 13px;
+            margin-top: 8px;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <!-- 🌐 Navbar -->
-    <nav>
-        <div class="nav-left">
-            <a href="/">🏠 YatriSimplified</a>
-        </div>
-
-        <div class="nav-right">
-            {% if 'user_id' in session %}
-                <a href="/wallet">Wallet</a>
-                <a href="/bookings">My Bookings</a>
-                <a href="/logout">Logout</a>
-            {% else %}
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
-            {% endif %}
-        </div>
-    </nav>
-
-    <!-- 💬 Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flash-messages">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
+<header>
+    <a href="/"><h1>YatriSimplified</h1></a>
+    <div class="nav-buttons">
+        {% if 'user_id' in session %}
+            <a href="/wallet"><i class="fas fa-wallet"></i> Wallet</a>
+            <a href="/bookings"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        {% else %}
+            <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="/register"><i class="fas fa-user-plus"></i> Register</a>
         {% endif %}
-    {% endwith %}
+    </div>
+</header>
 
-    <!-- 🧱 Page Content -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<div class="content-wrapper">
     {% block content %}
     {% endblock %}
+</div>
+
+<footer>
+    <div>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-github"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+    </div>
+    <div>&copy; 2025 YatriSimplified. All rights reserved.</div>
+</footer>
 
 </body>
 </html>

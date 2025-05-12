@@ -6,161 +6,155 @@
     <title>Routes Found - YatriSimplified</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffffff;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+    :root {
+    --primary: #0f172a;
+    --secondary: #d4af37;
+    --accent: #facc15;
+    --bg: #f8fafc;
+    --text: #1e293b;
+    --card: #ffffff;
+    --hover-bg: #fefce8;
+}
 
-        h2, h3 {
-            text-align: center;
-            color: #d4af37;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg);
+    margin: 0;
+    padding: 0;
+    color: var(--text);
+}
 
-        .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 20px;
-        }
+h2, h3 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 30px;
+    font-weight: 600;
+}
 
-        .route-summary, .route-details {
-            background-color: #fffdf8;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
 
-        .route-summary p, .route-details p {
-            margin: 0;
-            font-size: 16px;
-        }
+.route-summary, .route-details {
+    background-color: var(--hover-bg);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .total-cost {
-            text-align: right;
-        }
+.route-summary p, .route-details p {
+    margin: 0;
+    font-size: 16px;
+}
 
-        .total-cost a {
-            color: #d4af37;
-            font-weight: bold;
-            text-decoration: none;
-        }
+.total-cost {
+    text-align: right;
+}
 
-        .route-summary a:hover, .total-cost a:hover {
-            text-decoration: underline;
-        }
+.total-cost a {
+    color: var(--secondary);
+    font-weight: bold;
+    text-decoration: none;
+}
 
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
+.route-summary a:hover, .total-cost a:hover {
+    text-decoration: underline;
+}
 
-        li {
-            margin-bottom: 12px;
-            font-size: 15px;
-            line-height: 1.5;
-        }
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
 
-        .step-mode {
-            font-weight: bold;
-            color: #d4af37;
-        }
+li {
+    margin-bottom: 12px;
+    font-size: 15px;
+    line-height: 1.5;
+}
 
-        .step-time {
-            font-size: 14px;
-            color: #555;
-        }
+.step-mode {
+    font-weight: bold;
+    color: var(--secondary);
+}
 
-        hr {
-            margin-top: 30px;
-            margin-bottom: 30px;
-            border: 1px solid #d4af37;
-        }
+.step-time {
+    font-size: 14px;
+    color: #555;
+}
 
-        .back-button {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 16px;
-        }
+hr {
+    margin: 30px 0;
+    border: 1px solid var(--secondary);
+}
 
-        .back-button a {
-            color: #d4af37;
-            text-decoration: none;
-            font-weight: bold;
-        }
+.back-button {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 16px;
+}
 
-        .back-button a:hover {
-            text-decoration: underline;
-        }
-    </style>
+.back-button a {
+    color: var(--secondary);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-button a:hover {
+    text-decoration: underline;
+}
+</style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" role="main">
     <h2>Available Routes for {{ travel_date }}</h2>
 
+    {% macro display_route(route) %}
+        <div class="route-details">
+            <p><strong>Total Time:</strong> {{ route.total_time }} mins</p>
+            <p class="total-cost">
+                <a href="{{ url_for('confirmation', route_id=route.id) }}"><strong>Total Cost:</strong> ₹{{ route.total_cost }}</a>
+            </p>
+        </div>
+        <ul>
+        {% for step in route.route %}
+            <li>
+                {{ step.source }} → {{ step.destination }} via
+                {% if step.mode == 'bus' %}🚌{% elif step.mode == 'train' %}🚆{% elif step.mode == 'flight' %}✈️{% elif step.mode == 'cab' %}🚖{% endif %}
+                <span class="step-mode">{{ step.mode.capitalize() }}</span><br>
+                <span class="step-time">🕒 Departure: {{ step.departure_datetime }} | <strong>Arrival:</strong> {{ step.arrival_datetime }}</strong></span><br>
+                ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endmacro %}
+
     {% if routes %}
-        <!-- Fastest Route -->
-        <p><strong>Fastest Route ({{ fastest.total_time }} mins)</strong></p>
-        <div class="route-summary">
-            <p><strong>Total Time:</strong> {{ fastest.total_time }} mins</p>
-            <p class="total-cost"><a href="{{ url_for('confirmation', route_id=fastest.id) }}"><strong>Total Cost:</strong> ₹{{ fastest.total_cost }}</a></p>
-        </div>
-        <ul>
-            {% for step in fastest.route %}
-                <li>
-                    {{ step.source }} → {{ step.destination }} via
-                    {% if step.mode == 'bus' %}🚌{% elif step.mode == 'train' %}🚆{% elif step.mode == 'flight' %}✈️{% elif step.mode == 'cab' %}🚖{% endif %}
-                    <span class="step-mode">{{ step.mode.capitalize() }}</span><br>
-                    <span class="step-time">🕒 Departure: {{ step.departure_datetime }} | <strong>Arrival:</strong> {{ step.arrival_datetime }}</span><br>
-                    ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
-                </li>
-            {% endfor %}
-        </ul>
+        {% if fastest and fastest.id %}
+            <h3>🚀 Fastest Route ({{ fastest.total_time }} mins)</h3>
+            {{ display_route(fastest) }}
+        {% endif %}
 
-        <!-- Cheapest Route -->
-        <p><strong>Affordable Route (₹{{ cheapest.total_cost }})</strong></p>
-        <div class="route-summary">
-            <p><strong>Total Time:</strong> {{ cheapest.total_time }} mins</p>
-            <p class="total-cost"><a href="{{ url_for('confirmation', route_id=cheapest.id) }}"><strong>Total Cost:</strong> ₹{{ cheapest.total_cost }}</a></p>
-        </div>
-        <ul>
-            {% for step in cheapest.route %}
-                <li>
-                    {{ step.source }} → {{ step.destination }} via
-                    {% if step.mode == 'bus' %}🚌{% elif step.mode == 'train' %}🚆{% elif step.mode == 'flight' %}✈️{% elif step.mode == 'cab' %}🚖{% endif %}
-                    <span class="step-mode">{{ step.mode.capitalize() }}</span><br>
-                    <span class="step-time">🕒 Departure: {{ step.departure_datetime }} | <strong>Arrival:</strong> {{ step.arrival_datetime }}</span><br>
-                    ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
-                </li>
-            {% endfor %}
-        </ul>
+        {% if cheapest and cheapest.id %}
+            <h3>💸 Affordable Route (₹{{ cheapest.total_cost }})</h3>
+            {{ display_route(cheapest) }}
+        {% endif %}
 
-        <h3>All Routes for {{ travel_date }}</h3>
+        <h3>🗺️ All Routes for {{ travel_date }}</h3>
         {% for r in routes %}
-            <hr>
-            <div class="route-details">
-                <p><strong>Total Time:</strong> {{ r.total_time }} mins</p>
-                <p class="total-cost"><a href="{{ url_for('confirmation', route_id=r.id) }}"><strong>Total Cost:</strong> ₹{{ r.total_cost }}</a></p>
-            </div>
-            <ul>
-                {% for step in r.route %}
-                    <li>
-                        {{ step.source }} → {{ step.destination }} via
-                        {% if step.mode == 'bus' %}🚌{% elif step.mode == 'train' %}🚆{% elif step.mode == 'flight' %}✈️{% elif step.mode == 'cab' %}🚖{% endif %}
-                        <span class="step-mode">{{ step.mode.capitalize() }}</span><br>
-                        <span class="step-time">🕒 Departure: {{ step.departure_datetime }} | <strong>Arrival:</strong> {{ step.arrival_datetime }}</span><br>
-                        ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
-                    </li>
-                {% endfor %}
-            </ul>
+            {% if r.id%}
+                <hr>
+                {{ display_route(r) }}
+            {% endif %}
         {% endfor %}
     {% else %}
         <p>No routes found for the selected day.</p>

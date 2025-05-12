@@ -5,114 +5,177 @@
     <title>Admin Dashboard - YatriSimplified</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* Global Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            display: flex;
-            min-height: 100vh;
-        }
-        .sidebar {
-            width: 240px;
-            background: linear-gradient(to bottom, #d4af37, #c29928);
-            color: #fff;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100%;
-        }
-        .sidebar h2 {
-            font-size: 26px;
-            margin-bottom: 40px;
-        }
-        .sidebar button {
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.3s;
-        }
-        .sidebar button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-        }
-        .content {
-            margin-left: 260px;
-            padding: 40px;
-            width: calc(100% - 260px);
-        }
-        h2 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        h2::after {
-            content: '';
-            width: 60px;
-            height: 3px;
-            background: #d4af37;
-            position: absolute;
-            left: 0;
-            bottom: -8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            padding: 14px 16px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        th {
-            background-color: #d4af37;
-            color: white;
-            font-size: 16px;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        input[type="text"] {
-            padding: 10px 15px;
-            width: 300px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-        }
-        /* Payment Status Colors */
-        .paid {
-            color: green;
-            font-weight: bold;
-        }
-        .pending {
-            color: red;
-            font-weight: bold;
-        }
-        .cab-pending {
-            color: orange;
-            font-weight: bold;
-        }
-    </style>
-</head>
+    :root {
+        --primary: #0f172a;
+        --secondary: #d4af37;
+        --accent: #facc15;
+        --bg: #f1f5f9;
+        --text: #1e293b;
+        --card: #ffffff;
+        --hover-bg: #fefce8;
+        --highlight: #0ea5e9;
+    }
 
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: var(--text);
+    }
+
+    header {
+        background: var(--primary);
+        color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .sidebar {
+    width: 240px;
+    background: #0f172a; /* Deep tech-style black */
+    color: #f8fafc; /* Light text for contrast */
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100%;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: var(--accent);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+}
+
+.sidebar button {
+    background: none;
+    border: none;
+    color: #e2e8f0;
+    font-size: 16px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s ease;
+    padding: 10px 8px;
+    border-radius: 6px;
+}
+
+.sidebar button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--accent);
+    transform: translateX(4px);
+}
+
+    .content {
+        margin-left: 270px;
+        padding: 40px;
+        width: calc(100% - 270px);
+    }
+
+    h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    th, td {
+        padding: 14px 18px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 15px;
+    }
+
+    th {
+        background-color: var(--primary);
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .paid {
+        color: #16a34a;
+        font-weight: 600;
+    }
+
+    .pending {
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    .cab-pending {
+        color: #ea580c;
+        font-weight: 600;
+    }
+
+    #searchInput {
+        padding: 10px 14px;
+        margin-bottom: 20px;
+        width: 300px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+    #searchInput:focus {
+        border-color: var(--highlight);
+        box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+    }
+
+    form button[type="submit"] {
+        margin-top: auto;
+        background-color: transparent;
+        border: 2px solid #fff;
+        color: #fff;
+        font-weight: bold;
+        padding: 10px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    form button[type="submit"]:hover {
+        background-color: #fff;
+        color: var(--primary);
+    }
+
+    th[onclick] {
+        cursor: pointer;
+    }
+
+    th[onclick]:hover {
+        color: var(--accent);
+    }
+</style>
+
+</head>
 <body>
 
 <div class="sidebar">
@@ -151,95 +214,65 @@
 
     <!-- Bookings Section -->
     <div id="bookings" class="section" style="display:none;">
-    <h2>🧾 All Bookings</h2>
-    <input type="text" id="searchInput" placeholder="Search by User Name...">
+        <h2>🧾 All Bookings</h2>
+        <input type="text" id="searchInput" placeholder="Search by User Name..." onkeyup="filterBookings()">
 
-    <table id="bookingsTable">
-        <thead>
-            <tr>
-                <th onclick="sortBookingId()" style="cursor:pointer;">
-                    Booking ID <span id="sortIcon">🔽</span>
-                </th>
-                <th>User ID</th>
-                <th>User Name</th>
-                <th>Mode</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Departure</th>
-                <th>Arrival</th>
-                <th>Cost (₹)</th>
-                <th>Booking Time</th>
-                <th>Payment Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for booking in bookings %}
-            <tr>
-                <td>{{ booking.booking_id }}</td>
-                <td>{{ booking.user_id }}</td>
-                <td>{{ booking.user_name }}</td>
-                <td>{{ booking.mode }}</td>
-                <td>{{ booking.source }}</td>
-                <td>{{ booking.destination }}</td>
-                <td>{{ booking.departure_time }}</td>
-                <td>{{ booking.arrival_time }}</td>
-                <td>₹{{ booking.cost }}</td>
-                <td>{{ booking.booking_time }}</td>
-                <td>
-                    {% if booking.mode == 'Cab' %}
-                        {% if booking.payment_status == 'Paid' %}
-                            <span class="paid">Paid ✅</span>
+        <table id="bookingsTable">
+            <thead>
+                <tr>
+                    <th onclick="sortBookingId()" style="cursor:pointer;">
+                        Booking ID <span id="sortIcon">🔽</span>
+                    </th>
+                    <th>User ID</th>
+                    <th>User Name</th>
+                    <th>Mode</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Cost (₹)</th>
+                    <th>Booking Time</th>
+                    <th>Payment Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.booking_id }}</td>
+                    <td>{{ booking.user_id }}</td>
+                    <td>{{ booking.user_name }}</td>
+                    <td>{{ booking.mode }}</td>
+                    <td>{{ booking.source }}</td>
+                    <td>{{ booking.destination }}</td>
+                    <td>{{ booking.departure_time }}</td>
+                    <td>{{ booking.arrival_time }}</td>
+                    <td>₹{{ booking.cost }}</td>
+                    <td>{{ booking.booking_time }}</td>
+                    <td>
+                        {% if booking.mode == 'Cab' %}
+                            {% if booking.payment_status == 'Paid' %}
+                                <span class="paid">Paid ✅</span>
+                            {% else %}
+                                <span class="cab-pending">Still need to pay 🟠</span>
+                            {% endif %}
                         {% else %}
-                            <span class="cab-pending">Still need to pay 🟠</span>
+                            <span class="paid">Paid ✅</span>
                         {% endif %}
-                    {% else %}
-                        <span class="paid">Paid ✅</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<!-- Sorting Script -->
-<script>
-let bookingIdAsc = true; // default to ascending order first
-
-function sortBookingId() {
-    const table = document.getElementById('bookingsTable');
-    const tbody = table.querySelector('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-
-    rows.sort((a, b) => {
-        const idA = parseInt(a.cells[0].innerText.trim());
-        const idB = parseInt(b.cells[0].innerText.trim());
-        return bookingIdAsc ? idA - idB : idB - idA;
-    });
-
-    // Remove existing rows
-    while (tbody.firstChild) {
-        tbody.removeChild(tbody.firstChild);
-    }
-
-    // Append sorted rows
-    rows.forEach(row => tbody.appendChild(row));
-
-    // Toggle sort direction
-    bookingIdAsc = !bookingIdAsc;
-
-    // Change the icon
-    document.getElementById('sortIcon').innerText = bookingIdAsc ? '🔽' : '🔼';
-}
-</script>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <!-- Wallets Section -->
     <div id="wallets" class="section" style="display:none;">
-        <h2>💰 Wallet Balances</h2>
+        <h2>💳 User Wallets</h2>
         <table>
             <thead>
                 <tr>
                     <th>User ID</th>
+                    <th>Name</th>
                     <th>Wallet Balance (₹)</th>
                 </tr>
             </thead>
@@ -247,7 +280,8 @@ function sortBookingId() {
                 {% for wallet in wallets %}
                 <tr>
                     <td>{{ wallet.user_id }}</td>
-                    <td>{{ wallet.balance }}</td>
+                    <td>{{ wallet.user_name }}</td>
+                    <td>₹{{ wallet.balance }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -255,28 +289,41 @@ function sortBookingId() {
     </div>
 </div>
 
+<!-- Scripts -->
 <script>
-// Show sections
-function showSection(sectionId) {
-    document.querySelectorAll('.section').forEach(section => {
-        section.style.display = 'none';
-    });
-    document.getElementById(sectionId).style.display = 'block';
-}
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.section');
+        sections.forEach(sec => sec.style.display = 'none');
+        document.getElementById(sectionId).style.display = 'block';
+    }
 
-// Live Search
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    const rows = document.querySelectorAll("#bookingsTable tbody tr");
+    let bookingIdAsc = true;
 
-    searchInput.addEventListener('keyup', () => {
-        const filter = searchInput.value.toLowerCase();
-        rows.forEach(row => {
-            const userName = row.cells[2].textContent.toLowerCase();
-            row.style.display = userName.includes(filter) ? "" : "none";
+    function sortBookingId() {
+        const table = document.getElementById("bookingsTable").getElementsByTagName("tbody")[0];
+        const rows = Array.from(table.rows);
+
+        rows.sort((a, b) => {
+            const aVal = parseInt(a.cells[0].innerText);
+            const bVal = parseInt(b.cells[0].innerText);
+            return bookingIdAsc ? aVal - bVal : bVal - aVal;
         });
-    });
-});
+
+        rows.forEach(row => table.appendChild(row));
+        document.getElementById("sortIcon").textContent = bookingIdAsc ? "🔼" : "🔽";
+        bookingIdAsc = !bookingIdAsc;
+    }
+
+    function filterBookings() {
+        const input = document.getElementById("searchInput").value.toLowerCase();
+        const table = document.getElementById("bookingsTable");
+        const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+        Array.from(rows).forEach(row => {
+            const userName = row.cells[2].innerText.toLowerCase();
+            row.style.display = userName.includes(input) ? "" : "none";
+        });
+    }
 </script>
 
 </body>

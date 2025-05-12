@@ -5,102 +5,117 @@
     <title>YatriSimplified - Multimodal Transport</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #d4af37;
+            --accent: #facc15;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --card: #ffffff;
+            --hover-bg: #fefce8;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffffff;
+            background-color: var(--bg);
             margin: 0;
             padding: 0;
+            color: var(--text);
         }
 
         header {
-            background-color: #d4af37;
-            color: #ffffff;
+            background: var(--primary);
+            color: white;
             padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
         header h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 30px;
             font-weight: bold;
+            letter-spacing: 1px;
         }
 
         .nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .nav-buttons button {
-            background-color: #ffffff;
-            color: #d4af37;
-            border: 2px solid #ffffff;
-            padding: 8px 14px;
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 8px 16px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: bold;
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .nav-buttons button:hover {
-            background-color: #f8f0cd;
-            border-color: #f8f0cd;
+            background-color: var(--accent);
+            color: #000;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 520px;
             margin: 50px auto;
-            background: #fffdf8;
-            padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            background: var(--card);
+            padding: 32px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
         h2 {
             text-align: center;
-            color: #d4af37;
+            color: var(--primary);
+            font-size: 24px;
             font-weight: 600;
         }
 
         label {
-            font-weight: bold;
+            font-weight: 600;
             display: block;
             margin-top: 20px;
             margin-bottom: 5px;
-            color: #333333;
+            color: var(--text);
         }
 
         input[type="text"],
         input[type="date"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #d4af37;
-            border-radius: 5px;
-            font-size: 14px;
-            background-color: #ffffff;
+            padding: 10px 12px;
+            border: 1px solid var(--secondary);
+            border-radius: 6px;
+            font-size: 15px;
+            background-color: #fff;
+            color: var(--text);
         }
 
         input[type="submit"] {
             margin-top: 30px;
             width: 100%;
-            background-color: #d4af37;
-            color: #ffffff;
+            background-color: var(--primary);
+            color: #fff;
             border: none;
             padding: 12px;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 6px;
             font-weight: bold;
+            transition: background-color 0.3s ease;
         }
 
         input[type="submit"]:hover {
-            background-color: #b79828;
+            background-color: #1e293b;
         }
 
         .input-row {
@@ -114,33 +129,34 @@
         }
 
         #swap-btn {
-            background-color: #d4af37;
+            background-color: var(--secondary);
             border: none;
-            color: white;
+            color: #fff;
             padding: 10px 12px;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s ease;
         }
 
         #swap-btn:hover {
-            background-color: #b79828;
+            background-color: #b58d26;
         }
 
         .how-it-works {
-            max-width: 900px;
-            margin: 60px auto;
-            padding: 30px;
-            background-color: #fffaf0;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            max-width: 960px;
+            margin: 70px auto;
+            padding: 30px 40px;
+            background-color: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.07);
         }
 
         .how-it-works h3 {
             text-align: center;
-            color: #d4af37;
+            color: var(--primary);
             margin-bottom: 30px;
+            font-size: 22px;
         }
 
         .steps {
@@ -150,10 +166,10 @@
         }
 
         .step {
-            background-color: #fff;
+            background-color: var(--hover-bg);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.03);
             text-align: center;
             transition: transform 0.3s ease;
         }
@@ -163,24 +179,24 @@
         }
 
         .step h4 {
-            color: #d4af37;
+            color: var(--primary);
             margin: 15px 0 10px;
-            font-size: 18px;
+            font-size: 17px;
         }
 
         .step p {
             font-size: 14px;
             color: #555;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .icon {
-            font-size: 30px;
-            color: #d4af37;
+            font-size: 28px;
+            color: var(--secondary);
         }
 
         footer {
-            background-color: #d4af37;
+            background-color: var(--primary);
             color: white;
             text-align: center;
             padding: 20px 10px;
@@ -189,14 +205,19 @@
 
         footer a {
             color: white;
-            margin: 0 10px;
-            font-size: 24px;
+            margin: 0 12px;
+            font-size: 22px;
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
         footer a:hover {
-            color: #ffffff;
+            opacity: 0.7;
+        }
+
+        footer div:last-child {
+            font-size: 13px;
+            margin-top: 8px;
             opacity: 0.8;
         }
     </style>
@@ -276,22 +297,19 @@
         sourceInput.value = destinationInput.value;
         destinationInput.value = temp;
     });
-</script>
-<script>
-    // Set today's date as the minimum selectable date
+
+    // Set today's date as minimum for travel
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('travel_date').setAttribute('min', today);
 </script>
 
-
-<!-- 🌟 Footer -->
 <footer>
-    <div style="margin-bottom: 10px;">
+    <div>
         <a href="https://github.com/BHOOMIKAKN" target="_blank"><i class="fab fa-github"></i></a>
         <a href="https://www.linkedin.com/in/bhoomika-k-n-7175ab227" target="_blank"><i class="fab fa-linkedin"></i></a>
         <a href="mailto:bhoomikakn02@gmail.com"><i class="fas fa-envelope"></i></a>
     </div>
-    <div style="font-size: 14px;">© 2025 YatriSimplified. All rights reserved.</div>
+    <div>© 2025 YatriSimplified. All rights reserved.</div>
 </footer>
 
 </body>

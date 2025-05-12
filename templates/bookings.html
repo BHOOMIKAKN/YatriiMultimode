@@ -4,103 +4,173 @@
     <meta charset="UTF-8">
     <title>Your Bookings - YatriSimplified</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+    :root {
+        --primary: #0f172a;
+        --secondary: #d4af37;
+        --accent: #facc15;
+        --bg: #f8fafc;
+        --text: #1e293b;
+        --card: #ffffff;
+        --hover-bg: #fefce8;
+    }
 
-        .header {
-            background-color: #d4af37;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-        }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        padding: 0;
+        color: var(--text);
+    }
 
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-        }
+    header {
+        background: var(--primary);
+        color: white;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
 
-        .header-links a {
-            color: white;
-            margin-left: 20px;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-        }
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
 
-        .header-links a:hover {
-            text-decoration: underline;
-        }
+    .nav-buttons {
+        display: flex;
+        gap: 12px;
+    }
 
-        .container {
-            padding: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+    .nav-buttons button {
+        background-color: transparent;
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+    }
 
-        .booking {
-            background-color: #fff;
-            margin-bottom: 30px;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+    .nav-buttons button:hover {
+        background-color: var(--accent);
+        color: #000;
+    }
 
-        .booking h2 {
-            margin-top: 0;
-            color: #d4af37;
-            font-size: 24px;
-        }
+    .container {
+        max-width: 960px;
+        margin: 50px auto;
+        padding: 20px;
+    }
 
-        .booking-details {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #34495e;
-        }
+    .booking {
+        background-color: var(--card);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        transition: background-color 0.3s ease;
+    }
 
-        .segments {
-            list-style: none;
-            padding-left: 0;
-            margin-top: 15px;
-        }
+    .booking:hover {
+        background-color: var(--hover-bg);
+    }
 
-        .segments li {
-            background-color: #fdfdfd;
-            padding: 15px;
-            border-left: 5px solid #d4af37;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
+    .booking h2 {
+        margin: 0 0 16px;
+        color: var(--secondary);
+        font-size: 22px;
+    }
 
-        .segments li strong {
-            color: #2c3e50;
-            font-size: 18px;
-        }
+    .booking-details p {
+        margin: 8px 0;
+        font-size: 16px;
+        line-height: 1.5;
+    }
 
-        .no-bookings {
-            text-align: center;
-            font-size: 22px;
-            margin-top: 100px;
-            color: #888;
-        }
-    </style>
+    .booking-details strong {
+        color: var(--text);
+    }
+
+    h3 {
+        margin-top: 20px;
+        font-size: 18px;
+        color: var(--primary);
+    }
+
+    .segments {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 15px;
+    }
+
+    .segments li {
+        background-color: #fff;
+        padding: 16px;
+        border-left: 5px solid var(--accent);
+        margin-bottom: 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        line-height: 1.6;
+    }
+
+    .segments li strong {
+        color: var(--text);
+        font-size: 16px;
+    }
+
+    .no-bookings {
+        text-align: center;
+        font-size: 20px;
+        margin-top: 100px;
+        color: #999;
+    }
+
+    footer {
+        background-color: var(--primary);
+        color: white;
+        text-align: center;
+        padding: 20px 10px;
+        margin-top: 60px;
+    }
+
+    footer a {
+        color: white;
+        margin: 0 12px;
+        font-size: 22px;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+        opacity: 0.7;
+    }
+
+    footer div:last-child {
+        font-size: 13px;
+        margin-top: 8px;
+        opacity: 0.8;
+    }
+</style>
+
 </head>
 <body>
 
-    <div class="header">
+    <header>
         <h1>Your Bookings</h1>
-        <div class="header-links">
-            <a href="/">🏠 Home</a>
-            <a href="/wallet">💰 Wallet</a>
-            <a href="/logout">🔒 Logout</a>
+        <div class="nav-buttons">
+            <button onclick="location.href='/'">🏠 Home</button>
+            <button onclick="location.href='/wallet'">💰 Wallet</button>
+            <button onclick="location.href='/logout'">🔒 Logout</button>
         </div>
-    </div>
+    </header>
 
     <div class="container">
         {% if bookings %}
