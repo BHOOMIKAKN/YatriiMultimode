@@ -173,6 +173,44 @@
     th[onclick]:hover {
         color: var(--accent);
     }
+     /* Container for all transport links */
+/* Container for all transport links */
+.transport-links {
+    display: flex;
+    flex-direction: column;  /* Stack rows vertically */
+    gap: 15px;               /* Gap between rows */
+    margin-top: 20px;
+}
+
+.link-row {
+    display: flex;
+    gap: 20px;               /* Space between links in a row */
+    justify-content: center; /* Center links horizontally */
+}
+
+.link-row a {
+    display: inline-block;
+    background: linear-gradient(135deg, #d4af37, #b8860b); /* golden gradient */
+    color: #0f172a; /* dark navy/blackish text */
+    padding: 20px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 700;
+    min-width: 220px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.5);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.link-row a:hover {
+    background: #0f172a; /* dark background on hover */
+    color: #d4af37;      /* golden text on hover */
+    transform: scale(1.07);
+    box-shadow: 0 6px 14px rgba(212, 175, 55, 0.9);
+}
+
+
 </style>
 
 </head>
@@ -181,8 +219,10 @@
 <div class="sidebar">
     <h2>Admin Panel</h2>
     <button onclick="showSection('users')"><i class="fas fa-user"></i> Users</button>
-    <button onclick="showSection('bookings')"><i class="fas fa-ticket"></i> Bookings</button>
+    <button onclick="showSection('bookings')"><i class="fas fa-ticket-alt"></i> Bookings</button>
     <button onclick="showSection('wallets')"><i class="fas fa-wallet"></i> Wallets</button>
+    <button onclick="showSection('transport')"><i class="fas fa-bus"></i> Transport Details</button>
+
     <form action="/" method="GET" style="margin-top: auto;">
         <button type="submit"><i class="fas fa-home"></i> Home</button>
     </form>
@@ -249,12 +289,8 @@
                     <td>₹{{ booking.cost }}</td>
                     <td>{{ booking.booking_time }}</td>
                     <td>
-                        {% if booking.mode == 'Cab' %}
-                            {% if booking.payment_status == 'Paid' %}
-                                <span class="paid">Paid ✅</span>
-                            {% else %}
-                                <span class="cab-pending">Still need to pay 🟠</span>
-                            {% endif %}
+                        {% if booking.mode == 'Cab' and booking.payment_status != 'Paid' %}
+                            <span class="cab-pending">Still need to pay 🟠</span>
                         {% else %}
                             <span class="paid">Paid ✅</span>
                         {% endif %}
@@ -287,41 +323,59 @@
             </tbody>
         </table>
     </div>
+     <!-- Transport Section -->
+    <!-- Transport Section -->
+<div id="transport" class="section" style="display:none;">
+    <h2>🚌 Transport Details</h2>
+    <p>Manage transport routes and schedules.</p>
+    <div class="transport-links">
+        <div class="link-row">
+            <a href="{{ url_for('transport_route') }}">Manage Transport Routes</a>
+            <a href="{{ url_for('add_route') }}">Add Routes</a>
+             </div>
+        <div class="link-row">
+            <a href="{{ url_for('update_route') }}">Update Routes</a>
+
+         </div>
+    </div>
+</div>
 </div>
 
-<!-- Scripts -->
+
+<!-- JavaScript Functions -->
 <script>
     function showSection(sectionId) {
         const sections = document.querySelectorAll('.section');
-        sections.forEach(sec => sec.style.display = 'none');
-        document.getElementById(sectionId).style.display = 'block';
+        sections.forEach(section => section.style.display = 'none');
+        const selectedSection = document.getElementById(sectionId);
+        if (selectedSection) selectedSection.style.display = 'block';
     }
 
     let bookingIdAsc = true;
 
     function sortBookingId() {
-        const table = document.getElementById("bookingsTable").getElementsByTagName("tbody")[0];
-        const rows = Array.from(table.rows);
+        const tableBody = document.getElementById("bookingsTable").querySelector("tbody");
+        const rows = Array.from(tableBody.rows);
 
         rows.sort((a, b) => {
-            const aVal = parseInt(a.cells[0].innerText);
-            const bVal = parseInt(b.cells[0].innerText);
-            return bookingIdAsc ? aVal - bVal : bVal - aVal;
+            const aId = parseInt(a.cells[0].innerText);
+            const bId = parseInt(b.cells[0].innerText);
+            return bookingIdAsc ? aId - bId : bId - aId;
         });
 
-        rows.forEach(row => table.appendChild(row));
+        rows.forEach(row => tableBody.appendChild(row));
         document.getElementById("sortIcon").textContent = bookingIdAsc ? "🔼" : "🔽";
         bookingIdAsc = !bookingIdAsc;
     }
 
     function filterBookings() {
-        const input = document.getElementById("searchInput").value.toLowerCase();
-        const table = document.getElementById("bookingsTable");
-        const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        const searchValue = document.getElementById("searchInput").value.toLowerCase();
+        const tableBody = document.getElementById("bookingsTable").querySelector("tbody");
+        const rows = Array.from(tableBody.rows);
 
-        Array.from(rows).forEach(row => {
+        rows.forEach(row => {
             const userName = row.cells[2].innerText.toLowerCase();
-            row.style.display = userName.includes(input) ? "" : "none";
+            row.style.display = userName.includes(searchValue) ? "" : "none";
         });
     }
 </script>

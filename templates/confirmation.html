@@ -197,8 +197,6 @@
 </head>
 <body>
     <div class="container">
-
-
         <h2>Route Confirmation</h2>
 
         <div class="route-details">
@@ -206,10 +204,11 @@
             <p><strong>Total Cost:</strong> ₹{{ route.total_cost }}</p>
 
             <hr>
-    <div class="header">
-    <a href="/results.html">← Back to Results</a>
-    <a href="/">🏠 Home</a>
-</div>
+            <div class="header">
+                <a href="/results.html">← Back to Results</a>
+                <a href="/">🏠 Home</a>
+            </div>
+
             <h3 class="route-summary">Route Segments</h3>
             <ul class="route-segments">
                 {% for step in route.route %}
@@ -223,10 +222,13 @@
 
                         <span class="mode">{{ step.mode.capitalize() }}</span>
                         <div class="time-cost">
-                           🕒 <strong>Departure:</strong> {{ step.departure_datetime }} |
-                            <strong>Arrival:</strong> {{ step.arrival_datetime }}
-                            <br>
-                            ⏱ Duration: {{ step.duration }} mins | 💰 Cost: ₹{{ step.cost }}
+                            🕒 <strong>Departure:</strong> {{ step.departure_datetime }} |
+                            <strong>Arrival:</strong> {{ step.arrival_datetime }}<br>
+
+                            ⏱ Duration: {{ step.duration }} mins |
+                            💰 Cost: ₹{{ step.cost }}<br>
+
+                            🚍 <strong>Service:</strong> {{ step.service_name }} ({{ step.service_number }})
                         </div>
                     </li>
                 {% endfor %}
@@ -235,17 +237,16 @@
 
         <hr>
 
-
-
         <!-- Booking Confirm Button -->
         <div style="text-align: center; margin-top: 30px;">
-    <form action="{{ url_for('booking_confirmation', route_id=route.id) }}" method="POST">
-        <button class="confirm-button" type="submit">
-            ✅ Book This Route for ₹{{ route.total_cost }}
-        </button>
-    </form>
-</div>
+            <form action="{{ url_for('booking_confirmation', route_id=route.id) }}" method="POST">
+                <button class="confirm-button" type="submit">
+                    ✅ Book This Route for ₹{{ route.total_cost }}
+                </button>
+            </form>
+        </div>
     </div>
 </body>
+
 </html>
 

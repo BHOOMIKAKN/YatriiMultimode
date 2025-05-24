@@ -31,6 +31,8 @@ CREATE TABLE routes (
     departure_time DATETIME,
     arrival_time DATETIME,
     operating_days varchar(50),
+    service_name varchar(100),
+    service_number varchar(50),
     FOREIGN KEY (mode_id) REFERENCES transport_modes(id)
 );
 
@@ -133,6 +135,7 @@ select * from transport_modes;
 select * from routes;
 select * from wallet;
 select * from bookings;
+select * from booking_routes;
 ALTER TABLE routes
 DROP COLUMN seats_available;
 
@@ -148,4 +151,40 @@ ALTER TABLE routes MODIFY operating_days VARCHAR(255) DEFAULT 'Daily';
 UPDATE routes SET operating_days = 'Daily' WHERE mode_id =3 ;
 DELETE FROM routes;
 SET SQL_SAFE_UPDATES = 0;
-update wallet set balance = 200000 where id=1;
+
+
+UPDATE routes
+SET service_name = 'Vistara Airlines',
+    service_number = 'UK995'
+WHERE id = 62;
+-- 🚌 Bus Routes
+INSERT INTO routes (source, destination, mode_id, duration, cost, departure_time, arrival_time, operating_days, service_name, service_number)
+VALUES 
+('Bangalore', 'Mysore', 1, 180, 150.00, '07:00:00', '10:00:00', 'Daily', 'KSRTC', 'KA-09-1234'),
+('Chennai', 'Pondicherry', 1, 210, 200.00, '08:00:00', '11:30:00', 'Daily', 'TNSTC', 'TN-01-5678');
+
+-- 🚆 Train Routes
+INSERT INTO routes (source, destination, mode_id, duration, cost, departure_time, arrival_time, operating_days, service_name, service_number)
+VALUES 
+('Delhi', 'Agra', 2, 120, 300.00, '06:00:00', '08:00:00', 'Mon,Wed,Fri', 'Gatimaan Express', '12049'),
+('Mumbai', 'Pune', 2, 180, 350.00, '07:15:00', '10:15:00', 'Tue,Thu,Sat', 'Deccan Express', '11007');
+
+-- ✈️ Flight Routes
+INSERT INTO routes (source, destination, mode_id, duration, cost, departure_time, arrival_time, operating_days, service_name, service_number)
+VALUES 
+('Delhi', 'Mumbai', 3, 150, 4500.00, '09:00:00', '11:30:00', 'Daily', 'IndiGo', '6E204'),
+('Bangalore', 'Hyderabad', 3, 90, 3500.00, '08:00:00', '09:30:00', 'Mon,Wed,Fri', 'Vistara', 'UK845');
+
+-- 🚖 Cab Routes
+INSERT INTO routes (source, destination, mode_id, duration, cost, departure_time, arrival_time, operating_days, service_name, service_number)
+VALUES 
+('Jaipur', 'Ajmer', 4, 150, 1200.00, '06:30:00', '09:00:00', 'Daily', 'Ola', 'OLA-AJ-121'),
+('Lucknow', 'Kanpur', 4, 90, 1000.00, '07:45:00', '09:15:00', 'Daily', 'Uber', 'UBR-KN-202');
+
+
+select * from routes;
+select id from routes where mode_id=3;
+ALTER TABLE routes
+ADD COLUMN service_name VARCHAR(100),    -- Shatabdi Express
+ADD COLUMN service_number VARCHAR(50);   -- 12001
+

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>All Transport Routes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+
+        header {
+            background-color: #000000; /* black */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        header nav a {
+            color: #ffd700; /* gold */
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        header nav a:hover {
+            color: #fffacd; /* lighter gold */
+            text-decoration: underline;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: black;
+            color: gold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e1e1e1;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            header nav a {
+                margin: 8px 0 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <a href="{{ url_for('admin_dashboard') }}">Home</a>
+        <a href="{{ url_for('add_route') }}">Add Route</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+</header>
+
+<h2>🚍 All Transport Routes</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Source</th>
+        <th>Destination</th>
+        <th>Mode ID</th>
+        <th>Duration (min)</th>
+        <th>Cost</th>
+        <th>Departure Time</th>
+        <th>Arrival Time</th>
+        <th>Operating Days</th>
+        <th>Service Name</th>
+        <th>Service Number</th>
+    </tr>
+    {% for route in routes %}
+    <tr>
+        <td>{{ route['id'] }}</td>
+        <td>{{ route['source'] }}</td>
+        <td>{{ route['destination'] }}</td>
+        <td>{{ route['mode_id'] }}</td>
+        <td>{{ route['duration'] }}</td>
+        <td>{{ route['cost'] }}</td>
+        <td>{{ route['departure_time'] }}</td>
+        <td>{{ route['arrival_time'] }}</td>
+        <td>{{ route['operating_days'] }}</td>
+        <td>{{ route['service_name'] }}</td>
+        <td>{{ route['service_number'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

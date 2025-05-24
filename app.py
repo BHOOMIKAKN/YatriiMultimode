@@ -95,6 +95,67 @@ def send_confirmation_email(to_address, confirmation_code, route_segments):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
+@app.route('/update_route')
+def update_route():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, source, destination, service_name, service_number FROM routes")
+    routes = cursor.fetchall()
+    conn.close()
+    return render_template('update_route_list.html', routes=routes)
+
+@app.route('/update_route/<int:route_id>', methods=['GET', 'POST'])
+def update_route_form(route_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        duration = request.form['duration']
+        cost = request.form['cost']
+        departure_time = request.form['departure_time']
+        arrival_time = request.form['arrival_time']
+        operating_days = ','.join(request.form.getlist('operating_days'))
+
+        cursor.execute("""
+            UPDATE routes SET duration=%s, cost=%s, departure_time=%s, arrival_time=%s, operating_days=%s WHERE id=%s
+        """, (duration, cost, departure_time, arrival_time, operating_days, route_id))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('transport_route'))  # Redirect to routes list
+
+    # For GET request, fetch existing data to pre-fill form
+    cursor.execute("SELECT * FROM routes WHERE id=%s", (route_id,))
+    route = cursor.fetchone()
+    conn.close()
+    return render_template('update_route_form.html', route=route)
+
+
+@app.route('/add_route', methods=['GET', 'POST'])
+def add_route():
+    if request.method == 'POST':
+        source = request.form['source']
+        destination = request.form['destination']
+        mode_id = request.form['mode_id']
+        duration = request.form['duration']
+        cost = request.form['cost']
+        departure_time = request.form['departure_time']
+        arrival_time = request.form['arrival_time']
+        operating_days = request.form['operating_days']
+        service_name = request.form['service_name']
+        service_number = request.form['service_number']
+
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO routes (source, destination, mode_id, duration, cost, departure_time, arrival_time, operating_days, service_name, service_number)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (source, destination, mode_id, duration, cost, departure_time, arrival_time, operating_days, service_name, service_number))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('transport_route'))  # Redirect to view all routes after adding
+
+    return render_template('add_route.html')
+
 
 @app.route('/admin')
 def admin_dashboard():
@@ -252,12 +313,33 @@ def get_route_by_id(route_id):
         return cursor.fetchone()
 
 
-@app.route('/confirmation/<int:route_id>')
+@app.route('/transport_route')
+def transport_route():
+    # Connect to your MySQL database
+    conn = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='admin@123',
+        db='yatrii',
+        cursorclass=pymysql.cursors.DictCursor  # Optional: makes row results as dictionaries
+    )
+
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT * FROM routes")
+        routes = cursor.fetchall()  # This will be a list of dictionaries if DictCursor is used
+
+    conn.close()
+    return render_template('transport_route.html', routes=routes)
+
+
+@app.route('/confirmation/<int:route_id>', methods=['GET', 'POST'])
 def confirmation(route_id):
     route = route_cache.get(route_id)
     if not route:
-        return "Route not found", 404
-    return render_template('confirmation.html', route=route)
+        flash("Invalid route selection.", "error")
+        return redirect('/')
+
+    return render_template("confirmation.html", route=route)
 
 
 @app.route('/login', methods=['GET', 'POST'])

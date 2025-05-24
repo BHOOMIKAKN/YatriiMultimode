@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Route</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff; /* light background */
+            color: #ffd700; /* golden text */
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #000000; /* black header */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #ffd700; /* golden text in header */
+            font-size: 24px;
+            margin: 0;
+        }
+
+        header nav a {
+            color: #ffd700; /* golden links */
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+            color: #fffacd; /* lighter gold on hover */
+        }
+
+        h2 {
+            text-align: center;
+            color: #ffd700; /* golden text */
+            margin-top: 40px;
+        }
+
+        form {
+            background-color: #1a1a1a; /* dark form background */
+            padding: 30px;
+            margin: 40px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); /* golden shadow */
+            max-width: 500px;
+            color: #ffd700; /* golden text inside form */
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            font-size: 14px;
+            background-color: #333; /* dark input background */
+            color: #ffd700; /* golden input text */
+        }
+
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background-color: #ffd700; /* golden button */
+            color: #1a1a1a; /* dark text on button */
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #333; /* dark background on hover */
+            color: #ffd700; /* golden text on hover */
+            border: 1px solid #ffd700;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            header nav a {
+                margin: 5px 0 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Admin Panel</h1>
+    <nav>
+        <a href="{{ url_for('admin_dashboard') }}">Home</a>
+        <a href="{{ url_for('transport_route') }}">View & Update Routes</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+</header>
+
+<h2>🔄 Update Route: {{ route['service_name'] }} (ID {{ route['id'] }})</h2>
+
+<form action="{{ url_for('update_route_form', route_id=route['id']) }}" method="post">
+    <label for="duration">Duration (minutes):</label>
+    <input type="number" id="duration" name="duration" value="{{ route['duration'] }}" required>
+
+    <label for="cost">Cost:</label>
+    <input type="number" step="0.01" id="cost" name="cost" value="{{ route['cost'] }}" required>
+
+    <label for="departure_time">Departure Time (YYYY-MM-DD HH:MM:SS):</label>
+    <input type="text" id="departure_time" name="departure_time" value="{{ route['departure_time'] }}" required>
+
+    <label for="arrival_time">Arrival Time (YYYY-MM-DD HH:MM:SS):</label>
+    <input type="text" id="arrival_time" name="arrival_time" value="{{ route['arrival_time'] }}" required>
+
+    <label>Operating Days:</label>
+<div>
+    {% set days = ['Daily', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] %}
+    {% for day in days %}
+        <label style="display: inline-block; margin-right: 10px;">
+            <input type="checkbox" name="operating_days" value="{{ day }}"
+            {% if day in route['operating_days'].split(',') %} checked {% endif %}>
+            {{ day }}
+        </label>
+    {% endfor %}
+</div>
+
+
+    <button type="submit">Update Route</button>
+</form>
+
+</body>
+</html>

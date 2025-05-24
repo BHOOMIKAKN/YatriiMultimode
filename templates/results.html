@@ -122,7 +122,7 @@ hr {
         <div class="route-details">
             <p><strong>Total Time:</strong> {{ route.total_time }} mins</p>
             <p class="total-cost">
-                <a href="{{ url_for('confirmation', route_id=route.id) }}"><strong>Total Cost:</strong> ₹{{ route.total_cost }}</a>
+                <a href="{{ url_for('confirmation', route_id=route.cache_id) }}"><strong>Total Cost:</strong> ₹{{ route.total_cost }}</a>
             </p>
         </div>
         <ul>

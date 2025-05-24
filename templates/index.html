@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>YatriSimplified - Multimodal Transport</title>
@@ -99,6 +99,15 @@
             background-color: #fff;
             color: var(--text);
         }
+.popular-route {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+.popular-route:hover {
+    background-color: #fff8dc;
+    border-color: var(--accent);
+}
 
         input[type="submit"] {
             margin-top: 30px;
@@ -183,6 +192,13 @@
             margin: 15px 0 10px;
             font-size: 17px;
         }
+.step-image {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
 
         .step p {
             font-size: 14px;
@@ -288,6 +304,29 @@
         </div>
     </div>
 </div>
+<div class="how-it-works">
+    <h3>Popular Routes</h3>
+    <div class="steps">
+       <div class="step popular-route" data-source="Bangalore" data-destination="Delhi">
+    <img src="{{ url_for('static', filename='uploads/delhi.jpeg') }}" alt="Bangalore to Delhi" class="step-image">
+
+    <h4>Bangalore → Delhi</h4>
+    <p>Fast trains and road travel options available.</p>
+</div>
+
+        <div class="step popular-route" data-source="Hyderabad" data-destination="Kashmir">
+            <img src="{{ url_for('static', filename='uploads/images.jpeg') }}" alt="Hyderabad to Kashmir" class="step-image">
+
+             <h4>Hyderabad → Kashmir</h4>
+            <p>Comfortable bus, train, and flight choices.</p>
+        </div>
+        <div class="step popular-route" data-source="Davangere" data-destination="Hyderabad">
+            <img src="{{ url_for('static', filename='uploads/Hyd.jpeg') }}" alt="Davangere to Hyderabad" class="step-image">
+            <h4>Davangere → Hyderabad</h4>
+            <p>Express trains and cab services available.</p>
+        </div>
+    </div>
+</div>
 
 <script>
     document.getElementById('swap-btn').addEventListener('click', function () {
@@ -302,7 +341,23 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('travel_date').setAttribute('min', today);
 </script>
+<script>
+document.querySelectorAll('.popular-route').forEach(route => {
+    route.addEventListener('click', () => {
+        const source = route.getAttribute('data-source');
+        const destination = route.getAttribute('data-destination');
+        const today = new Date().toISOString().split('T')[0];
 
+        // Set form values
+        document.getElementById('source').value = source;
+        document.getElementById('destination').value = destination;
+        document.getElementById('travel_date').value = today;
+
+        // Submit the form
+        document.querySelector('form[action="/find-routes"]').submit();
+    });
+});
+</script>
 <footer>
     <div>
         <a href="https://github.com/BHOOMIKAKN" target="_blank"><i class="fab fa-github"></i></a>

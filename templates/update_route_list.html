@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Routes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4; /* Light background */
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #000000; /* Black header */
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #ffd700; /* Golden text in header */
+            font-size: 24px;
+            margin: 0;
+        }
+
+        header nav a {
+            color: #ffd700; /* Golden links */
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+            color: #fffacd; /* Lighter gold on hover */
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 30px;
+            color: #000000;
+        }
+
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table th, table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #000000; /* Black header row */
+            color: #ffd700; /* Golden text */
+        }
+
+        table tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        a.update-link {
+            color: #ffd700; /* Golden link */
+            text-decoration: none;
+            font-weight: bold;
+            padding: 6px 12px;
+            background-color: #000000;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a.update-link:hover {
+            background-color: #ffd700; /* Golden background on hover */
+            color: #000000; /* Dark text on hover */
+        }
+
+        @media (max-width: 600px) {
+            table {
+                width: 100%;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            header nav a {
+                margin: 5px 0 0 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Admin Panel</h1>
+    <nav>
+        <a href="{{ url_for('admin_dashboard') }}">Home</a>
+        <a href="{{ url_for('add_route') }}">Add Route</a>
+        <a href="{{ url_for('transport_route') }}">View Routes</a>
+    </nav>
+</header>
+
+<h2>📝 Select Route to Update</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Source</th>
+        <th>Destination</th>
+        <th>Service Name</th>
+        <th>Service Number</th>
+        <th>Action</th>
+    </tr>
+    {% for route in routes %}
+    <tr>
+        <td>{{ route['id'] }}</td>
+        <td>{{ route['source'] }}</td>
+        <td>{{ route['destination'] }}</td>
+        <td>{{ route['service_name'] }}</td>
+        <td>{{ route['service_number'] }}</td>
+        <td><a href="{{ url_for('update_route_form', route_id=route['id']) }}" class="update-link">Update</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
